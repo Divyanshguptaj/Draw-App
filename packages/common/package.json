@@ -1,0 +1,24 @@
+{
+  "name": "@repo/common",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "index.js",
+  "types": "./src/types.d.ts",
+  "exports": {
+    ".": {
+      "import": "./index.js",
+      "require": "./index.cjs",
+      "types": "./src/types.d.ts"
+    }
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "zod": "^4.1.11"
+  }
+}
