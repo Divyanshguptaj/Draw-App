@@ -1,43 +1,54 @@
+import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { NextRequest, NextResponse } from "next/server";
+import { JWT_SECRET } from "@repo/config";
 import { db } from "../config/db";
 
-export const Login = async (req:NextRequest) => {
-    try {
-        const { email, password} = await req.json();
+// ✅ Login
+export const login = async (req: Request, res: Response) => {
+  try {
+    const { email, password } = req.body;
 
-        if(!password || !email) {
-            return NextResponse.json({message: "Username and password are required"}, {status: 404});
-        }
-        const user = db.User.find({email})
-        if(!user) return NextResponse.json({message: "User not found"});
-
-        const isPasswordValid = bcrypt.compareSync(password, user.password);
-        if(!isPasswordValid) return NextResponse.json({message: "Invalid password"}, {status: 401});
-
-        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET as string, { expiresIn: "1h" });
-
-        return NextResponse.json({message: "Login successful"}, {status: 200});
-    } catch (error) {
-        return NextResponse.json({message: "Internal server error"}, {status: 500});
-    }   
-}
-
-export const SignIn = async (req:NextRequest)=>{
-    try {
-        const { username, email, password} = await req.json();
-        if(!username || !email || !password) {
-            return NextResponse.json({message: "Username, email and password are required"});
-        }
-        const user = db.User.find({email})
-        if(user) return NextResponse.json({message: "User already exists"});
-        const hashedPassword = bcrypt.hashSync(password, 8);
-
-        db.User.create({username, email, password: hashedPassword});
-        
-        return NextResponse.json({message: "User created successfully"});
-    } catch (error) {
-        return NextResponse.json({message: "Internal server error"});
+    if (!email || !password) {
+      return res.status(400).json({ message: "Email and password are required" });
     }
-}
+
+    const user = await db.User.findOne({ where: { email } });
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    const isPasswordValid = bcrypt.compareSync(password, user.password);
+    if (!isPasswordValid) return res.status(401).json({ message: "Invalid password" });
+
+    const token = jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: "1h" });
+
+    return res.status(200).json({ message: "Login successful", token });
+  } catch (error) {
+    console.error("Login error:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// ✅ Sign In (Register)
+export const signup = async (req: Request, res: Response) => {
+  try {
+    const { username, email, password } = req.body;
+
+    if (!username || !email || !password) {
+      return res
+        .status(400)
+        .json({ message: "Username, email, and password are required" });
+    }
+
+    const existingUser = await db.User.findOne({ where: { email } });
+    if (existingUser) return res.status(409).json({ message: "User already exists" });
+
+    const hashedPassword = bcrypt.hashSync(password, 8);
+
+    await db.User.create({ username, email, password: hashedPassword });
+
+    return res.status(201).json({ message: "User created successfully" });
+  } catch (error) {
+    console.error("Signup error:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
