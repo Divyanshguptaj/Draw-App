@@ -1,5 +1,6 @@
-// import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "./generated/prisma";
 
+export const prismaClient = new PrismaClient();
 // const globalForPrisma = global as unknown as { prisma: PrismaClient };
 
 // const prisma =
@@ -8,8 +9,7 @@
 //     log: ["query"],
 // });
 
-// if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
+// if (process.env.NODE_ENV !== "production") 
+    // globalForPrisma.prisma = prisma;
 
 // export const db = prisma;
-
-export const JWT_SECRET = process.env.JWT_SECRET || "divyansh";

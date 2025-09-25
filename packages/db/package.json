@@ -1,5 +1,5 @@
 {
-  "name": "@repo/backend-common",
+  "name": "@repo/db",
   "version": "1.0.0",
   "main": "index.js",
   "exports": {
@@ -10,15 +10,13 @@
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.9.2"
+    "prisma": "6.16.2"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@prisma/client": "^6.16.2",
-    "@types/node": "^22.15.3"
+    "@prisma/client": "6.16.2"
   }
 }
